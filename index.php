@@ -1,7 +1,7 @@
 <?php
 
 // 7 unique numbers ranging from 1 to 59
-$inputs = ["569815571556", "4938532894754", "1111111", "1234567", "1234568", "472844278465445"];
+$inputs = ["569815571556", "4938532894754", "1111111", "1234567", "12345678", "472844278465445"];
 
 $inputs = getValidTicket($inputs);
 
@@ -12,11 +12,11 @@ function getValidTicket(array $inputs) : array
     $returnArray = [];
     foreach($inputs as $input) {
 
-        if ($input[0] == 0) {
+        if (strlen($input) < 7 || strlen($input) > 14) {
             continue;
         }
-
-        if (strlen($input) < 7 || strlen($input) > 14) {
+        
+        if ($input[0] == 0) {
             continue;
         }
 
@@ -63,18 +63,66 @@ function getValidTicket(array $inputs) : array
         
         if (strlen($input) % 2 == 0) {
             if (strlen($input) == 8) {
-               //for a string with 8 characters, pair first two digits, check if they're between 10-59
-               //take the rest of the array as single digits
-               //check single digits for duplicates
-               //if no dupes, return
-               //if dupes shift double digit over one index, repeat
-               $doubleDigit = substr($input, 0, 2);
-               $singleDigits = substr($input, 2);
-               str_split($singleDigits);
-               $unique = array_unique(str_split($singleDigits));
+                //for a string with 8 characters, pair first two digits, check if they're between 10-59
+                //take the rest of the array as single digits
+                //check single digits for duplicates
+                //if no dupes, return
+                //if dupes shift double digit over one index, repeat
+                for ($i=0; $i < strlen($input) - 1; $i++) {
+                    $doubleDigit = substr($input, $i, 2);
 
-               count($unique) !== count($singleDigits);
+                    if ($doubleDigit[0] == 0) {
+                        continue;
+                    }
+
+                    if (!in_array($doubleDigit, range(10, 59))) {
+                        continue;
+                    }
+
+                    $firstPart = substr($input, 0, $i);
+                    $secondPart = substr($input, $i+2);
+                    $rest = $firstPart . $secondPart;
+                    $singles = str_split($rest);
+
+                    $unique = array_unique($singles);
+
+                    if (count($unique) !== count($singles)) {
+                        continue;
+                    }
+
+                    $returnArray[$input] = implode(" ", array_merge(str_split($firstPart), [$doubleDigit], str_split($secondPart)));
+                    break;
+                }
             }
+
+            if (strlen($input) == 12) {
+                // for 
+                for ($i = 0; $i < strlen($input) - 1; $i++) {
+                    $doubleDigit = substr($input, $i, 2);
+
+                    if ($doubleDigit[0] == 0) {
+                        continue;
+                    }
+
+                    if (!in_array($doubleDigit, range(10, 59))) {
+                        continue;
+                    }
+
+                    $firstPart = substr($input, 0, $i);
+                    $secondPart = substr($input, $i+2);
+                    $rest = $firstPart . $secondPart;
+                    $singles = str_split($rest);
+
+                    $unique = array_unique($singles);
+
+                    if (count($unique) !== count($singles)) {
+                        continue;
+                    }
+
+                    $returnArray[$input] = implode(" ", array_merge(str_split($firstPart), [$doubleDigit], str_split($secondPart)));
+                    break;
+                }
+             }
         }
 
         /** Odd Solutions
